@@ -1,0 +1,55 @@
+{
+  "name": "random-int64",
+  "version": "0.1.0",
+  "description": "Efficiently generate random 64-bit integers",
+  "author": "Adi Turiya <code@turiya.dev>",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/random-int64.mjs",
+      "require": "./dist/random-int64.cjs"
+    }
+  },
+  "main": "dist/random-int64.cjs",
+  "module": "dist/random-int64.mjs",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "mocha",
+    "rollup": "rollup --config",
+    "prepack": "npm run rollup"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/turiyadev/random-int64.git"
+  },
+  "bugs": {
+    "url": "https://github.com/turiyadev/random-int64/issues"
+  },
+  "keywords": [
+    "random",
+    "number",
+    "generator",
+    "pseudo-random",
+    "integer",
+    "entropy",
+    "64bit",
+    "64-bit",
+    "random number",
+    "random number generator",
+    "pseudo-random number generator",
+    "cryptographic",
+    "secure",
+    "RNG",
+    "PRNG",
+    "CPRNG",
+    "CSPRNG"
+  ],
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "rollup": "^3.21.6"
+  }
+}
