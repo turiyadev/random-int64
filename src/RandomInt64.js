@@ -87,7 +87,7 @@ export default class RandomInt64 {
     while (value === 0n && !this.#allowZero) {
       value = this.#getValue();
     }
-    const n = this.signed ?
+    const n = this.#signed ?
       BigInt.asIntN(this.#bits, value) :
       BigInt.asUintN(this.#bits, value);
     return this.#base ? n.toString(this.#base) : n;
