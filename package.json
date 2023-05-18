@@ -19,7 +19,7 @@
   "scripts": {
     "test": "mocha",
     "rollup": "rollup --config",
-    "prepack": "npm run rollup"
+    "build": "npm run rollup"
   },
   "repository": {
     "type": "git",
