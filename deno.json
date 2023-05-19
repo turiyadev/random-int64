@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "chai": "npm:chai@4.3.7",
+    "mocha": "npm:mocha@10.2.0"
+  }
+}

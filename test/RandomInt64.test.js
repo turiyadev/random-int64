@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { describe, it } from 'mocha';
 import RandomInt64 from "../src/RandomInt64.js";
 
 describe('RandomInt64', () => {
