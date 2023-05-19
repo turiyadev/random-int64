@@ -1,6 +1,6 @@
 {
   "imports": {
-    "chai": "npm:chai@4.3.7",
-    "mocha": "npm:mocha@10.2.0"
+    "chai": "https://cdn.skypack.dev/chai@4.3.4?dts",
+    "mocha": "https://deno.land/x/deno_mocha/mod.ts"
   }
 }
