@@ -1,4 +1,6 @@
 export default class RandomInt64 {
+  static #init = false;
+  #crypto;
   #buffer;
   #pointer;
   #interval;
@@ -10,8 +12,14 @@ export default class RandomInt64 {
   #signed;
   #allowZero;
 
-  constructor(options) {
-    options = options || {};
+  constructor(options, crypto) {
+    if (!RandomInt64.#init) {
+      throw new TypeError(
+        'The constructor is not callable; use `await RandomInt64.generator()` instead'
+      );
+    }
+    RandomInt64.#init = false;
+    this.#crypto = crypto;
 
     this.#signed = !!options.signed;
     this.#allowZero =
@@ -43,6 +51,18 @@ export default class RandomInt64 {
     this.#mix64 = new BigUint64Array(this.#mix32.buffer);
   }
 
+  static async generator(options) {
+    let crypto;
+    if (globalThis.crypto) {
+      crypto = globalThis.crypto;
+    } else {
+      const nodeCrypto = await import('node:crypto');
+      crypto = nodeCrypto.webcrypto;
+    }
+    RandomInt64.#init = true;
+    return new RandomInt64(options || {}, crypto);
+  }
+
   /**
    * 32-bit integer hash function
    * https://github.com/skeeto/hash-prospector/issues/19#issuecomment-1105792898
@@ -69,7 +89,7 @@ export default class RandomInt64 {
   #getValue() {
     // If the buffer has been used up, refill it
     if (this.#pointer >= this.#buffer.length) {
-      globalThis.crypto.getRandomValues(this.#buffer);
+      this.#crypto.getRandomValues(this.#buffer);
       this.#pointer = 0;
     }
     

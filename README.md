@@ -58,25 +58,33 @@ const RandomInt64 = require('random-int64');
 In either case,
 
 ```
-const randomId = new RandomInt64();
+const randomId = await RandomInt64.generator();
 const id1 = randomId.create();
 const id2 = randomId.create();
 
-console.log(id1); // 7761218963542659225
-console.log(id2); // 3510194340918650657
+console.log(id1);
+console.log(id2);
+```
+
+Example outputs:
+
+```
+7761218963542659225
+3510194340918650657
 ```
 
 For best performance, the class instance should be cached for repeated usage.
 
 ### Options
 
-Using the default parameterless constructor, `RandomInt64` will generate
-positive 64-bit values between `1` and `2^63 - 1`, with each value returned as
-a base-10 string. It uses an internal 1024-bit buffer (16 x 64 bits) in order
-to reduce the frequency of calls to the underlying cryptographic library.
+Calling `RandomInt64.generator()` with no parameters will return a class
+instance that generates positive 64-bit values between `1` and `2^63 - 1`, each
+value being returned as a base-10 string. It will use an internal 1024-bit
+buffer (16 x 64 bits) in order to reduce the frequency of calls to the
+underlying cryptographic library.
 
 You can customize your instance by passing in an object with one or more of the
-following properties to the constructor.
+following properties to the static `generator()` function.
 
 #### `bufferSize`
 
@@ -92,7 +100,7 @@ performance gains.
 Example:
 
 ```
-const randomId = new RandomInt64({
+const randomId = await RandomInt64.generator({
   bufferSize: 40
 });
 ```
@@ -104,7 +112,7 @@ possible to generate signed (randomly positive or negative) values by setting
 the `signed` property to `true`:
 
 ```
-const randomId = new RandomInt64({
+const randomId = await RandomInt64.generator({
   signed: true
 });
 ```
@@ -124,7 +132,7 @@ To generate random `Uint64` values (with the full available 64 significant
 bits), set the number of bits explicitly:
 
 ```
-const randomId = new RandomInt64({
+const randomId = await RandomInt64.generator({
   bits: 64
 });
 ```
@@ -132,7 +140,7 @@ const randomId = new RandomInt64({
 Or, to generate a value in JavaScript's max safe integer range,
 
 ```
-const randomId = new RandomInt64({
+const randomId = await RandomInt64.generator({
   bits: 53
 });
 ```
@@ -140,7 +148,7 @@ const randomId = new RandomInt64({
 To get the equivalent output with signed values you need to add an extra bit:
 
 ```
-const randomId = new RandomInt64({
+const randomId = await RandomInt64.generator({
   signed: true,
   bits: 54
 });
@@ -155,7 +163,7 @@ can specify a different base, or supply a `null` value to return the raw
 To get hexadecimal output:
 
 ```
-const randomId = new RandomInt64({
+const randomId = await RandomInt64.generator({
   base: 16
 });
 ```
@@ -163,7 +171,7 @@ const randomId = new RandomInt64({
 To get raw `BigInt` values instead of formatted strings:
 
 ```
-const randomId = new RandomInt64({
+const randomId = await RandomInt64.generator({
   base: null
 });
 ```
@@ -181,7 +189,7 @@ boolean value to the constructor.
 To generate signed values excluding `0`:
 
 ```
-const randomId = new RandomInt64({
+const randomId = await RandomInt64.generator({
   signed: true,
   allowZero: false
 });
@@ -190,7 +198,7 @@ const randomId = new RandomInt64({
 To generate unsigned values including `0`:
 
 ```
-const randomId = new RandomInt64({
+const randomId = await RandomInt64.generator({
   allowZero: true
 });
 ```

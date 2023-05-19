@@ -1,7 +1,9 @@
 name: Run Tests
-on: [push]
+
+on: [push, pull_request]
+
 jobs:
-  build:
+  node:
     runs-on: ubuntu-latest
     strategy:
       matrix:
