@@ -10,19 +10,26 @@ host platform's cryptographic PRNG.
 
 ## Compatibility
 
-`RandomInt64` makes use of the following JavaScript features:
+`RandomInt64` uses the Web Crypto API's
+[`getRandomValues()`](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues)
+for cross-platform access to a cryptographically strong source of random bytes.
+In Node versions that do not expose this API on `globalThis` (i.e. prior to
+version 19), we fall back to standard `node:crypto` functions.
 
-- Web Crypto API [`getRandomValues()`](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues)
-- [`globalThis`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis)
-- [`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)
-- [`performance.now()`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now)
-- [Private class fields and methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields)
+Deno has supported this API since version 1.0, and it is well supported by all
+modern browsers.
 
-Most popular JavaScript platforms offer full support for these features,
-including:
+While there are additional requirements, in general, any platform that supports
+[Private class fields and methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields)
+will support all the necessary JavaScript features (e.g.
+[`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt),
+[`globalThis`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis)
+and [`performance.now()`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now)).
 
-- Node 15+ (LTS version 16+ is recommended)
-- Deno 1.0+
+Minimum supported versions include:
+
+- Node 16+ (tested on current LTS versions)
+- Deno 1.30+ (older versions may work, but are untested)
 - Chrome 74+
 - Edge 79+
 - Firefox 90+
