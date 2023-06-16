@@ -1,6 +1,6 @@
-export default class RandomInt64 {
+export class RandomInt64 {
   private state: Uint32Array;
-  private output: BigUint64Array | BigInt64Array;
+  private output: BigInt64Array | BigUint64Array;
 
   constructor(signed?: boolean) {
     this.state = new Uint32Array(2);

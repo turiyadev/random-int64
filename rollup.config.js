@@ -3,7 +3,7 @@ import esbuild from "rollup-plugin-esbuild"
 
 export default [
   {
-    input: "src/RandomInt64.ts",
+    input: "mod.ts",
     plugins: [esbuild()],
     output: [
       {
@@ -19,8 +19,8 @@ export default [
     ]
   },
   {
+    input: "mod.ts",
     plugins: [dts()],
-    input: "src/RandomInt64.ts",
     output: {
       file: "dist/random-int64.d.ts",
       format: "esm"
