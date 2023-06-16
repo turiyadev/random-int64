@@ -1,6 +1,6 @@
 {
   "name": "random-int64",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Efficiently generate random non-deterministic 64-bit integers",
   "author": "Adi Turiya <code@turiya.dev>",
   "license": "MIT",
