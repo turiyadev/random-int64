@@ -3,7 +3,7 @@ export default class RandomInt64 {
   #output: BigUint64Array | BigInt64Array;
 
   constructor(signed?: boolean) {
-    this.#state = new Uint32Array([this.#random32(), 0]);
+    this.#state = new Uint32Array(2);
     this.#output = signed
       ? new BigInt64Array(this.#state.buffer)
       : new BigUint64Array(this.#state.buffer);
@@ -19,8 +19,9 @@ export default class RandomInt64 {
   }
 
   create(): bigint {
-    this.#state[0] = this.#random32() ^ this.#state[1];
-    this.#state[1] = this.#timing32() ^ this.#state[0];
+    const a = this.#timing32();
+    this.#state[0] = a ^ this.#random32();
+    this.#state[1] = ~a ^ this.#random32();
     return this.#output[0];
   }
 }
