@@ -1,6 +1,6 @@
 {
   "imports": {
     "chai": "https://cdn.skypack.dev/chai@4.3.4?dts",
-    "mocha": "https://deno.land/x/deno_mocha/mod.ts"
+    "mocha": "https://deno.land/x/deno_mocha@0.3.0/mod.ts"
   }
 }
