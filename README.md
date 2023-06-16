@@ -1,38 +1,46 @@
 # RandomInt64
 
 A portable, zero-dependency JavaScript utility for efficiently generating
-high-quality (non-deterministic) random sequences of 64-bit integers. To
-accomplish this, it mixes the output of `Math.random()` (i.e. Xorshift128+)
-with additional entropy collected from `performance.now()`.
+non-deterministic sequences of random 64-bit integers.
 
-Works in the browser (with some limitations), Node, and Deno (where it
-requires `--allow-hrtime` in order to function as intended).
+`RandomInt64` mixes the output of `Math.random()` (Xorshift128+) with
+additional entropy collected from `performance.now()`, preserving the
+statistical randomness of (the high bits of) Xorshift128+ while breaking its
+determinism, rendering the generated sequences much more difficult to predict
+and much less likely to ever repeat.
+
+Works in the browser (with some limitations, described below), Node, and Deno
+(where it requires `--allow-hrtime` in order to function as intended).
 
 ## Compatibility
 
-In general, any platform that supports
-[Private class fields and methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields)
-will also support the other necessary JavaScript features (i.e.
+`RandomInt64` generates
 [`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)
-and [`performance.now()`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now)).
+values, which limits the supported runtimes to:
 
-Minimum supported versions include:
-
-- Node 16+ (tested on current LTS versions)
-- Deno 1.30+ (older versions may work, but are untested)
-- Chrome 74+
+- Node 10.4+ (tested on current LTS versions 16+)
+- Deno 1+ (tested on 1.30+)
+- Chrome 67+
 - Edge 79+
-- Firefox 90+
-- Opera 62+
-- Safari 14.1+
+- Firefox 68+
+- Opera 54+
+- Safari 14+
 
-Note that browsers limit the resolution of `performance.now()` to a few
-microseconds (or sometimes more), which limits the amount of entropy that can
-be collected on each call. In this case, `RandomInt64` will still generate
-perfectly usable sequences of random values, however, successive outputs may
-contain repeated bit strings that are merely rotated by 32 bits.
+Note that most browsers limit the resolution of
+[`performance.now()`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now) to
+[a few microseconds](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now#security_requirements)
+(or sometimes more: Firefox only provides 1 ms resolution), which limits the
+amount of entropy that can be collected on each call. In this case,
+`RandomInt64` will still generate usable sequences of random values, however,
+outputs will exhibit higher degrees of determinism (comparable to just calling
+`Math.random()`).
 
 For this reason, `RandomInt64` is somewhat more suited for server-side usage.
+If you do use it in the browser, be sure to include the
+`Cross-Origin-Opener-Policy: same-origin` and
+`Cross-Origin-Embedder-Policy: require-corp` headers, so that your application
+is running in an isolated context (which enables somewhat higher resolution
+timers).
 
 ## Installation
 
@@ -65,9 +73,9 @@ const RandomInt64 = require('random-int64');
 In either case,
 
 ```
-const randomId = new RandomInt64();
-const id1 = randomId.create();
-const id2 = randomId.create();
+const randomInt64 = new RandomInt64();
+const id1 = randomInt64.create();
+const id2 = randomInt64.create();
 
 console.log(id1.toString());
 console.log(id2.toString());
@@ -85,7 +93,7 @@ For best performance, the class instance should be cached for repeated usage.
 ### Options
 
 The constructor takes a single argument, a boolean value that indicates whether
-a signed or unsigned 64-bit value will be returned.
+signed or unsigned 64-bit values will be generated.
 
 Calling `new RandomInt64()` with no arguments (or an argument that resolves to
 `false`) will return a class instance that generates unsigned (only positive)
@@ -119,15 +127,14 @@ required output range or format; any post-processing is left to the caller.
 
 This utility was designed for generating random 64-bit object identifiers
 (database keys) with good performance charateristics, relatively uniform
-distribution, and an extremely low probability of generating a repeated
-sequence of values (and, as a corrolary, relative difficulty in guessing
-what values will be generated next).
+distribution, and a low probability of generating repeated sequences of values.
 
 Although the sequences of generated values are effectively non-deterministic
 (they depend on the exact timing of successive calls to `create()`), they
-cannot be considered cryptographically secure (it may be possible to guess
+cannot be considered cryptographically secure. It may be possible to guess
 the seed state of the underlying PRNG, or the approximate timing between
-calls).
+calls, and thus narrow down the range of values that are likely to be or have
+been generated.
 
-For these and other reasons, *`RandomInt64` is not suitable for generating
-cryptographic key material.*
+In other words, *`RandomInt64` is not suitable for generating cryptographic
+key material.*
