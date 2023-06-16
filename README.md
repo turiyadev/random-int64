@@ -56,18 +56,28 @@ yarn add random-int64
 
 etc.
 
+In Deno, you may wish to add the module URL to your import map:
+
+```
+"imports": {
+  "random-int64": "https://deno.land/x/random_int64@0.6.0/mod.ts"
+}
+```
+
+Otherwise, you will need to import the URL directly in the below examples.
+
 ## Usage
 
 ES Modules
 
 ```
-import RandomInt64 from 'random-int64';
+import { RandomInt64 } from 'random-int64';
 ```
 
 CommonJS
 
 ```
-const RandomInt64 = require('random-int64');
+const { RandomInt64 } = require('random-int64');
 ```
 
 In either case,

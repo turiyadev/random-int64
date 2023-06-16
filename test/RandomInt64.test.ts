@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
 // @ts-ignore
-import RandomInt64 from "../src/RandomInt64.ts";
+import { RandomInt64 } from "../mod.ts";
 
 describe("RandomInt64", () => {
   describe("constructor", () => {
