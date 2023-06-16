@@ -60,7 +60,7 @@ In Deno, you may wish to add the module URL to your import map:
 
 ```
 "imports": {
-  "random-int64": "https://deno.land/x/random_int64@0.6.0/mod.ts"
+  "random-int64": "https://deno.land/x/random_int64@v0.6.1/mod.ts"
 }
 ```
 
