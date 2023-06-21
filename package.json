@@ -1,6 +1,6 @@
 {
   "name": "random-int64",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Efficiently generate random non-deterministic 64-bit integers",
   "author": "Adi Turiya <code@turiya.dev>",
   "license": "MIT",
@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "test": "mocha --register ts-node/register --loader=ts-node/esm 'test/**/*.test.ts'",
-    "rollup": "rollup --config",
+    "rollup": "rollup --config ./config/rollup.config.js",
     "build": "npm run rollup"
   },
   "repository": {
