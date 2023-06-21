@@ -3,44 +3,15 @@
 A portable, zero-dependency JavaScript utility for efficiently generating
 non-deterministic sequences of random 64-bit integers.
 
-`RandomInt64` mixes the output of `Math.random()` (Xorshift128+) with
-additional entropy collected from `performance.now()`, preserving the
-statistical randomness of (the high bits of) Xorshift128+ while breaking its
-determinism, rendering the generated sequences much more difficult to predict
-and much less likely to ever repeat.
+It mixes the output of `Math.random()` (Xorshift128+) with additional entropy
+derived from `performance.now()`, preserving the statistical randomness of
+Xorshift128+ while interrupting its determinism. This makes the sequence of
+generated values much more difficult to predict, and extremely unlikely to ever
+repeat (compared to Xorshift128+, which only cycles through `2^64` of the
+`~2^296` possible sequences of 64-bit values).
 
 Works in the browser (with some limitations, described below), Node, and Deno
 (where it requires `--allow-hrtime` in order to function as intended).
-
-## Compatibility
-
-`RandomInt64` generates
-[`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)
-values, which limits the supported runtimes to:
-
-- Node 10.4+ (tested on current LTS versions 16+)
-- Deno 1+ (tested on 1.30+)
-- Chrome 67+
-- Edge 79+
-- Firefox 68+
-- Opera 54+
-- Safari 14+
-
-Note that most browsers limit the resolution of
-[`performance.now()`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now) to
-[a few microseconds](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now#security_requirements)
-(or sometimes more: Firefox only provides 1 ms resolution), which limits the
-amount of entropy that can be collected on each call. In this case,
-`RandomInt64` will still generate usable sequences of random values, however,
-outputs will exhibit higher degrees of determinism (comparable to just calling
-`Math.random()`).
-
-For this reason, `RandomInt64` is somewhat more suited for server-side usage.
-If you do use it in the browser, be sure to include the
-`Cross-Origin-Opener-Policy: same-origin` and
-`Cross-Origin-Embedder-Policy: require-corp` headers, so that your application
-is running in an isolated context (which enables somewhat higher resolution
-timers).
 
 ## Installation
 
@@ -60,11 +31,11 @@ In Deno, you may wish to add the module URL to your import map:
 
 ```
 "imports": {
-  "random-int64": "https://deno.land/x/random_int64@v0.6.1/mod.ts"
+  "random-int64": "https://deno.land/x/random_int64@v0.6.2/mod.ts"
 }
 ```
 
-Otherwise, you will need to import the URL directly in the below examples.
+Otherwise, you will need to import the URL directly into your scripts.
 
 ## Usage
 
@@ -116,8 +87,8 @@ instance that generates signed (randomly positive or negative) values between
 `-(2^63 - 1)` and `2^63 - 1`.
 
 ```
-const randomId = new RandomInt64(true);
-const n = randomId.create();
+const randomInt64 = new RandomInt64(true);
+const n = randomInt64.create();
 
 console.log(n.toString());
 // -3984732910473829021
@@ -132,6 +103,36 @@ or `BigInt.asUintN(bits, value)` as needed.
 
 In other words, `RandomInt64` makes no assumptions about your application's
 required output range or format; any post-processing is left to the caller.
+
+## Compatibility
+
+`RandomInt64` generates
+[`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)
+values, which limits the supported runtimes to:
+
+- Node 10.4+ (tested on current LTS versions 16+)
+- Deno 1+ (tested on 1.30+)
+- Chrome 67+
+- Edge 79+
+- Firefox 68+
+- Opera 54+
+- Safari 14+
+
+Note that most browsers limit the resolution of
+[`performance.now()`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now) to
+[a few microseconds](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now#security_requirements)
+(or sometimes more: Firefox only provides 1 ms resolution), which limits the
+amount of entropy that can be collected on each call. In this case,
+`RandomInt64` will still generate usable sequences of random values, however,
+outputs will exhibit higher degrees of determinism (comparable to just calling
+`Math.random()`).
+
+For this reason, `RandomInt64` is somewhat more suited for server-side usage.
+If you do use it in the browser, be sure to include the
+`Cross-Origin-Opener-Policy: same-origin` and
+`Cross-Origin-Embedder-Policy: require-corp` headers, so that your application
+is running in an isolated context (which enables somewhat higher resolution
+timers).
 
 ## Disclaimer
 
