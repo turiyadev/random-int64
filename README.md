@@ -3,84 +3,77 @@
 A portable, zero-dependency JavaScript utility for efficiently generating
 non-deterministic sequences of random 64-bit integers.
 
-It mixes the output of `Math.random()` (Xorshift128+) with additional entropy
-derived from `performance.now()`, preserving the statistical randomness of
-Xorshift128+ while interrupting its determinism. This makes the sequence of
-generated values much more difficult to predict, and extremely unlikely to ever
-repeat (compared to Xorshift128+, which only cycles through `2^64` of the
-`~2^296` possible sequences of 64-bit values).
+Mixes the output of `Math.random()` (Xorshift128+) with additional entropy
+derived from `performance.now()`, which preserves the statistical properties of
+Xorshift128+ while interrupting its strict determinism. This makes the sequence
+of generated values much more difficult to predict, and extremely unlikely to
+ever repeat.
 
 Works in the browser (with some limitations, described below), Node, and Deno
 (where it requires `--allow-hrtime` in order to function as intended).
 
 ## Installation
 
-```
-npm install --save random-int64
-```
-
-or
+In Node, install normally using your preferred package manager:
 
 ```
+npm install random-int64
+
+pnpm add random-int64
+
 yarn add random-int64
 ```
-
-etc.
 
 In Deno, you may wish to add the module URL to your import map:
 
 ```
 "imports": {
-  "random-int64": "https://deno.land/x/random_int64@v0.6.2/mod.ts"
+  "random-int64": "https://deno.land/x/random_int64@v0.7.0/mod.ts"
 }
 ```
 
-Otherwise, you will need to import the URL directly into your scripts.
+Otherwise, you will need to reference the URL directly in your scripts.
 
 ## Usage
 
-ES Modules
+Two classes are available; they only differ in the generated data type:
 
-```
-import { RandomInt64 } from 'random-int64';
-```
+- `RandomInt64` generates `BigInt` values
+- `RandomBits64` generates 8-byte arrays (i.e. `Uint8Array(8)`)
 
-CommonJS
-
-```
-const { RandomInt64 } = require('random-int64');
-```
-
-In either case,
-
-```
-const randomInt64 = new RandomInt64();
-const id1 = randomInt64.create();
-const id2 = randomInt64.create();
-
-console.log(id1.toString());
-console.log(id2.toString());
-```
-
-Example outputs:
-
-```
-7761218963542659225
-3510194340918650657
-```
+Both `import` (ES modules) and `require` (CommonJS) are supported. Typescript
+is supported.
 
 For best performance, the class instance should be cached for repeated usage.
 
-### Options
+### `RandomInt64`
 
-The constructor takes a single argument, a boolean value that indicates whether
-signed or unsigned 64-bit values will be generated.
+To generate 64-bit `BigInt` values,
+
+```
+import { RandomInt64 } from 'random-int64';
+
+const randomInt64 = new RandomInt64();
+const int1 = randomInt64.create();
+const int2 = randomInt64.create();
+
+console.log(int1.toString());
+console.log(int2.toString());
+
+// 7761218963542659225
+// 3510194340918650657
+```
+
+#### Options
+
+The `RandomInt64` constructor takes a single argument, a boolean value that
+indicates whether signed or unsigned values will be generated.
 
 Calling `new RandomInt64()` with no arguments (or an argument that resolves to
-`false`) will return a class instance that generates unsigned (only positive)
-64-bit values between `0` and `2^64 - 1`.
+`false`) will return a class instance that generates unsigned 64-bit values
+between `0` and `2^64 - 1` (as in the above example).
 
-#### `signed`
+##### `signed`
 
 Passing in a boolean `true` to the constructor will result instead in a class
 instance that generates signed (randomly positive or negative) values between
@@ -94,15 +87,58 @@ console.log(n.toString());
 // -3984732910473829021
 ```
 
-### Usage Notes
+### `RandomBits64`
 
-Calls to the `create()` function will return a `BigInt` value. This can be
-converted to a string by calling `toString()` on the value, or if necessary it
-can be truncated to less than 64 bits using either `BigInt.asIntN(bits, value)`
-or `BigInt.asUintN(bits, value)` as needed.
+To generate 64-bit `Uint8Array(8)` values,
 
-In other words, `RandomInt64` makes no assumptions about your application's
-required output range or format; any post-processing is left to the caller.
+```
+import { RandomBits64 } from 'random-int64';
+
+const randomBits64 = new RandomBits64();
+const bits1 = randomBits64.create();
+console.log(bits1.toString());
+
+const bits2 = randomBits64.create();
+console.log(bits2.toString());
+
+// 76,152,199,167,4,159,105,169
+// 132,202,147,183,84,9,24,190
+```
+
+#### Options
+
+The `RandomBits64` constructor also takes a single (optional) boolean argument,
+which in this case indicates whether or not the internal buffer will be copied
+for each generated value.
+
+Calling `new RandomBits64()` with no arguments (or an argument that resolves to
+`false`) will return a class instance that simply exposes a reference to the
+internal buffer. Thus, in the above example, `bits1` and `bits2` actually refer
+to the same `Uint8Array` instance. (If the `console.log()` statements were to
+be grouped together at the end, they would print the same value.)
+
+Reusing the buffer is around 2-5 times faster than copying it, but this is
+really only useful if you are post-processing the `Uint8Array` in some way
+(such as converting it to a string, as above).
+
+##### `copy`
+
+Passing in a boolean `true` to the constructor will create an instance that
+copies the internal buffer object with each created value.
+
+This is useful if you need unique, persistent `Uint8Array` objects.
+
+```
+const randomBits64 = new RandomBits64(true);
+const bits1 = randomBits64.create();
+const bits2 = randomBits64.create();
+
+console.log(bits1.toString());
+console.log(bits2.toString());
+
+// 120,204,48,235,228,142,71,137
+// 106,95,14,187,47,229,188,112
+```
 
 ## Compatibility
 
@@ -137,8 +173,8 @@ timers).
 ## Disclaimer
 
 This utility was designed for generating random 64-bit object identifiers
-(database keys) with good performance charateristics, relatively uniform
-distribution, and a low probability of generating repeated sequences of values.
+(database keys) with good performance charateristics, uniform distribution,
+and a very low likelihood of ever generating a repeated sequence of values.
 
 Although the sequences of generated values are effectively non-deterministic
 (they depend on the exact timing of successive calls to `create()`), they
